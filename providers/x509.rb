@@ -54,10 +54,15 @@ protected
 
   def cert
     @cert ||= OpenSSL::X509::Certificate.new
+    puts cert
   end
 
   def gen_cert
     cert
+    puts cert
+    puts subject
+    puts OpenSSL::X509::Name.parse(subject)
+    puts cert.issuer = OpenSSL::X509::Name.parse(subject)
     cert.subject = cert.issuer = OpenSSL::X509::Name.parse(subject)
     cert.not_before = Time.now
     cert.not_after = Time.now + (new_resource.expire.to_i * 24 * 60 * 60)
