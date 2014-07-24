@@ -77,6 +77,7 @@ protected
     [
       ef.create_extension("basicConstraints","CA:TRUE", true),
       ef.create_extension("subjectKeyIdentifier", "hash"),
+      ef.create_extension("subjectAltName", new_resource.subject_alternative_names.map { |d| "DNS: #{d}" }.join(',')),
     ]
   end
 
