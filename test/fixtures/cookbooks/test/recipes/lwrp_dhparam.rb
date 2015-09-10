@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: test
-# Recipe:: default
+# Recipe:: lwrp_dhparam
 #
-# Copyright:: Copyright (c) 2014-2015, Chef Software, Inc. <legal@chef.io>
+# Copyright:: Copyright (c) 2015, Chef Software, Inc. <legal@chef.io>
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,4 +18,19 @@
 # limitations under the License.
 #
 
-execute 'apt-get update' if platform_family?('debian')
+# Ensure files are not present, so the lwrp makes new keys every time
+file 'any potential existing key' do
+  path '/etc/ssl_test/dhparam.pem'
+  action :delete
+end
+
+# Create directory if not already present
+directory '/etc/ssl_test' do
+  recursive true
+end
+
+# Generate new key and certificate
+openssl_dhparam '/etc/ssl_test/dhparam.pem' do
+  key_length 1024
+  action :create
+end

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: test
-# Recipe:: httpd
+# Recipe:: lwrp_rsa_key
 #
 # Copyright:: Copyright (c) 2015, Chef Software, Inc. <legal@chef.io>
 # License:: Apache License, Version 2.0
@@ -18,4 +18,31 @@
 # limitations under the License.
 #
 
-service('httpd') { action :nothing }
+# Ensure files are not present, so the lwrp makes new keys every time
+file 'any potential existing unsecured key' do
+  path '/etc/ssl_test/rsakey.pem'
+  action :delete
+end
+
+file 'any potential existing passworded key' do
+  path '/etc/ssl_test/rsakeypass.pem'
+  action :delete
+end
+
+# Create directory if not already present
+directory '/etc/ssl_test' do
+  recursive true
+end
+
+# Generate new key
+openssl_rsa_key '/etc/ssl_test/rsakey.pem' do
+  key_length 1024
+  action :create
+end
+
+# Generate new key with password
+openssl_rsa_key '/etc/ssl_test/rsakeypass.pem' do
+  key_length 1024
+  key_pass 'oink'
+  action :create
+end
